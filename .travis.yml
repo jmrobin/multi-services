@@ -1,0 +1,23 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker image build -t jmrhub/multi-client-test -f ./client/dev.Dockerfile ./client
+
+script:
+  - docker container run -e CI=true jmrhub/multi-client-test npm run test -- --coverage
+
+after_success:
+  - docker image build -t jmrhub/multi-client  ./client
+  - docker image build -t jmrhub/multi-worker  ./worker
+  - docker image build -t jmrhub/multi-server  ./server
+  - docker image build -t jmrhub/multi-nginx  ./nginx
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+  - docker image push jmrhub/multi-client
+  - docker image push jmrhub/multi-worker
+  - docker image push jmrhub/multi-server
+  - docker image push jmrhub/multi-nginx
