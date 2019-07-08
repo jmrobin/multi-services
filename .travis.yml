@@ -21,3 +21,15 @@ after_success:
   - docker image push jmrhub/multi-worker
   - docker image push jmrhub/multi-server
   - docker image push jmrhub/multi-nginx
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-1"
+  app: "multi-grider"
+  env: "MultiGrider-env"
+  bucket_name: "elasticbeanstalk-us-east-1-236959176402"
+  bucket_path: "grider-multi"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
